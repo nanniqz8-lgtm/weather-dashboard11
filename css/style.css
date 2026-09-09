@@ -1,0 +1,97 @@
+/* Глобальний reset на початку файлу стилів */
+*, *::before, *::after {
+    box-sizing: border-box; /* Завжди враховуємо рамки і відступи у ширину */
+}
+
+/* Базова типографіка та фон всього сайту */
+body {
+    margin: 0; 
+    font-family: system-ui, sans-serif;
+    line-height: 1.5;
+    color: #333333; 
+    background-color: #f4f7f6; 
+}
+
+/* Стилізуємо шапку (header) */
+header {
+    background-color: #1f6feb; 
+    color: white; 
+    padding: 20px;
+    border-bottom: 3px solid #0d47a1; 
+}
+
+header h1 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+header nav a {
+    color: white;
+    text-decoration: none; 
+    margin-right: 15px; 
+    font-weight: bold;
+}
+
+header nav a:hover {
+    text-decoration: underline; 
+}
+
+/* Стилізуємо лінію hr, щоб вона виглядала акуратніше (або можеш її видалити з html) */
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 20px 0;
+}
+
+/* Стилізуємо основний вміст (main та section) */
+main {
+    max-width: 800px; 
+    margin: 0 auto; 
+    padding: 20px;
+}
+
+section {
+    margin-bottom: 30px; 
+}
+
+section h2 {
+    color: #1f6feb; 
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+}
+
+/* Стилізуємо картки прогнозу (article з класом card) */
+.card {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+    margin-bottom: 15px; 
+    border-left: 5px solid #1f6feb; 
+}
+
+.card h3 {
+    margin-top: 0;
+}
+
+/* Стилізуємо бокову панель (aside з класом sidebar) та підвал (footer) */
+.sidebar {
+    background-color: #e3f2fd; 
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #90caf9;
+    margin-bottom: 20px;
+}
+
+.sidebar h2 {
+    margin-top: 0;
+    font-size: 1.2rem; 
+}
+
+footer {
+    background-color: #222; 
+    color: #ccc; 
+    text-align: center; 
+    padding: 15px;
+    font-size: 0.9rem; 
+}
