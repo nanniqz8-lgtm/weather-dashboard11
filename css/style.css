@@ -65,8 +65,7 @@ section h2 {
     background-color: white;
     padding: 15px;
     border-radius: 8px; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-    margin-bottom: 15px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);  
     border-left: 5px solid #1f6feb; 
 }
 
@@ -94,4 +93,72 @@ footer {
     text-align: center; 
     padding: 15px;
     font-size: 0.9rem; 
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* МОБІЛЬНИЙ ВИГЛЯД (Базові стилі, Mobile-first)*/
+
+/* Flexbox для шапки (рядок компактних посилань) */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Дозволяє перенесення, якщо не влазить */
+    gap: 10px;
+}
+
+.main-nav {
+    display: flex;
+    gap: 15px;
+}
+
+/* Grid для карток (1 колонка на мобільному) */
+.cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px; /* Заміна старому margin-bottom */
+}
+
+/* Flexbox для верхнього ряду (один під одним на мобільному) */
+.top-row {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+
+/* ПЛАНШЕТ (від 600px і ширше) */
+@media (min-width: 600px) {
+    /* Картки прогнозу - 3 колонки (згідно з варіантом 1) */
+    .cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+
+/* ДЕСКТОП (від 1024px і ширше) */
+@media (min-width: 1024px) {
+    /* Картки прогнозу - 7 колонок в один рядок (згідно з варіантом 1) */
+    .cards {
+        grid-template-columns: repeat(7, 1fr);
+    }
+    
+    /* aside поруч із section "Поточна погода" через flex */
+    .top-row {
+        flex-direction: row; /* Ставимо в рядок */
+        align-items: flex-start;
+    }
+    
+    #current {
+        flex: 3; /* Секція займає більше місця */
+    }
+    
+    .sidebar {
+        flex: 1; /* Бокова панель займає менше місця */
+        margin-bottom: 0;
+    }
 }

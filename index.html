@@ -9,59 +9,63 @@
 <body>
 
     <!-- Шапка сайту -->
-    <header>
+    <header class="site-header">
         <h1>Погодний дашборд</h1>
-        <nav>
-            <a href="#current">Поточна погода</a> |
+        <nav class="main-nav">
+            <a href="#current">Поточна погода</a>
             <a href="#forecast">Прогноз</a>
         </nav>
-        <br>
-        <!-- Поле пошуку з правильним зв'язком label та input (Доступність) -->
-        <label for="city-search">Пошук міста:</label>
-        <input type="text" id="city-search" name="city" placeholder="Введіть назву...">
     </header>
 
-    <hr> <!-- Лінія для візуального розділення, поки немає CSS -->
+    <hr>
 
     <!-- Основний вміст сторінки -->
     <main>
         
-        <!-- Секція 1: Поточна погода (одиничний блок) -->
-        <section id="current">
-            <h2>Поточна погода</h2>
-            <!-- Атрибут alt обов'язковий для картинок -->
-            <img src="assets/img/sunny.svg" alt="Іконка: сонячно, без опадів">
-            <p>Київ: +21&deg;C, ясно</p>
-        </section>
+        <!-- Обгортка для Flexbox (щоб поставити їх поруч на десктопі) -->
+        <div class="top-row">
+            <section id="current">
+                <h2>Поточна погода</h2>
+                <img src="assets/img/sunny.svg" alt="Іконка: сонячно, без опадів">
+                <p>Київ: +21&deg;C, ясно</p>
+            </section>
+
+            <aside class="sidebar">
+                <h2>Порада: Що вдягнути</h2>
+                <p>На вулиці сонячно, але вітряно. Рекомендуємо взяти легку куртку!</p>
+            </aside>
+        </div>
 
         <hr>
 
-        <!-- Секція 2: Прогноз (містить повторювані елементи) -->
         <section id="forecast">
-            <h2>Прогноз на кілька днів</h2>
+            <h2>Прогноз на тиждень</h2>
             
-            <!-- Картка 1 -->
-            <article class="card">
-                <h3>Понеділок</h3>
-                <img src="assets/img/cloudy.svg" alt="Іконка: хмарно">
-                <p>+18&deg;C</p>
-            </article>
-
-            <!-- Картка 2 -->
-            <article class="card">
-                <h3>Вівторок</h3>
-                <img src="assets/img/rain.svg" alt="Іконка: дощ">
-                <p>+16&deg;C</p>
-            </article>
+            <!-- Обгортка для CSS Grid -->
+            <div class="cards">
+                <article class="card">
+                    <h3>Пн</h3><p>+18&deg;C</p>
+                </article>
+                <article class="card">
+                    <h3>Вв</h3><p>+16&deg;C</p>
+                </article>
+                <article class="card">
+                    <h3>Ср</h3><p>+15&deg;C</p>
+                </article>
+                <article class="card">
+                    <h3>Чт</h3><p>+19&deg;C</p>
+                </article>
+                <article class="card">
+                    <h3>Пт</h3><p>+22&deg;C</p>
+                </article>
+                <article class="card">
+                    <h3>Сб</h3><p>+24&deg;C</p>
+                </article>
+                <article class="card">
+                    <h3>Нд</h3><p>+25&deg;C</p>
+                </article>
+            </div>
         </section>
-
-        <hr>
-
-        <!-- Необов'язковий, але корисний блок: поради -->
-        <aside class="sidebar">
-            <h2>Порада: Що вдягнути</h2>
-            <p>На вулиці сонячно, але вітряно. Рекомендуємо взяти легку куртку!</p>
-        </aside>
 
     </main>
 
