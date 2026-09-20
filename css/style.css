@@ -1,114 +1,54 @@
-/* Глобальний reset на початку файлу стилів */
+/* 1. БАЗОВІ НАЛАШТУВАННЯ ТА ТИПОГРАФІКА */
 *, *::before, *::after {
-    box-sizing: border-box; /* Завжди враховуємо рамки і відступи у ширину */
+    box-sizing: border-box;
 }
 
-/* Базова типографіка та фон всього сайту */
 body {
-    margin: 0; 
-    font-family: system-ui, sans-serif;
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     line-height: 1.5;
-    color: #333333; 
-    background-color: #f4f7f6; 
+    color: #333333;
+    background-color: #F4F7F6; /* Світло-сірий фон для контрасту з картками */
 }
 
-/* Стилізуємо шапку (header) */
-header {
-    background-color: #1f6feb; 
-    color: white; 
-    padding: 20px;
-    border-bottom: 3px solid #0d47a1; 
-}
-
-header h1 {
-    margin-top: 0;
-    margin-bottom: 10px;
-}
-
-header nav a {
-    color: white;
-    text-decoration: none; 
-    margin-right: 15px; 
-    font-weight: bold;
-}
-
-header nav a:hover {
-    text-decoration: underline; 
-}
-
-/* Стилізуємо лінію hr, щоб вона виглядала акуратніше (або можеш її видалити з html) */
-hr {
-    border: none;
-    border-top: 1px solid #ddd;
-    margin: 20px 0;
-}
-
-/* Стилізуємо основний вміст (main та section) */
-main {
-    max-width: 800px; 
-    margin: 0 auto; 
-    padding: 20px;
-}
-
-section {
-    margin-bottom: 30px; 
-}
-
-section h2 {
-    color: #1f6feb; 
-    border-bottom: 2px solid #ddd;
-    padding-bottom: 5px;
-}
-
-/* Стилізуємо картки прогнозу (article з класом card) */
-.card {
-    background-color: white;
-    padding: 15px;
-    border-radius: 8px; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);  
-    border-left: 5px solid #1f6feb; 
-}
-
-.card h3 {
-    margin-top: 0;
-}
-
-/* Стилізуємо бокову панель (aside з класом sidebar) та підвал (footer) */
-.sidebar {
-    background-color: #e3f2fd; 
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #90caf9;
-    margin-bottom: 20px;
-}
-
-.sidebar h2 {
-    margin-top: 0;
-    font-size: 1.2rem; 
-}
-
-footer {
-    background-color: #222; 
-    color: #ccc; 
-    text-align: center; 
-    padding: 15px;
-    font-size: 0.9rem; 
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-}
-
-/* МОБІЛЬНИЙ ВИГЛЯД (Базові стилі, Mobile-first)*/
-
-/* Flexbox для шапки (рядок компактних посилань) */
+/* 2. КОМПОЗИЦІЯ ТА МАКЕТ  */
 .site-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap; /* Дозволяє перенесення, якщо не влазить */
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 20px;
+    background-color: #FFFFFF;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Легка тінь для шапки */
+}
+
+main {
+    max-width: 1200px; /* Ширший макет для дашборду */
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.top-row {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+/* 3. ДИЗАЙН: ЧІТКІ ВИМОГИ ТА ЕЛЕМЕНТИ */
+
+/* Шапка та навігація */
+.site-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #1D4A7A; /* Акцентний синій колір */
 }
 
 .main-nav {
@@ -116,49 +56,144 @@ img {
     gap: 15px;
 }
 
-/* Grid для карток (1 колонка на мобільному) */
-.cards {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px; /* Заміна старому margin-bottom */
+.main-nav a {
+    text-decoration: none;
+    color: #555;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s;
 }
 
-/* Flexbox для верхнього ряду (один під одним на мобільному) */
-.top-row {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+.main-nav a:hover {
+    background-color: #E3F2FD;
+    color: #1D4A7A;
 }
 
+/* Секції загалом */
+section h2 {
+    color: #444;
+    font-size: 1.25rem;
+    border-bottom: 2px solid #E0E0E0;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
 
-/* ПЛАНШЕТ (від 600px і ширше) */
+/* ЧІТКА ВИМОГА: Фон поточної погоди (#123C69-#2E5A8C) */
+#current {
+    background-color: #1D4A7A; /* Колір з діапазону */
+    color: #FFFFFF; /* Білий текст для високого контрасту (>4.5:1) */
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+#current h2 {
+    color: #BBDEFB; /* Світло-блакитний заголовок, щоб не зливався з білим текстом */
+    border-bottom-color: rgba(255,255,255,0.2);
+}
+
+#current .temp-large {
+    font-size: 40px; /* Деталь дизайну: Великий жирний шрифт для температури */
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+#current img {
+    width: 100px;
+    height: auto;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); /* Іконка як акцент */
+}
+
+/* 4. ДИЗАЙН: НЕЧІТКА ВИМОГА */
+
+/* 
+   Рішення нечіткої вимоги:
+   Користувач одразу відчуває температуру завдяки кольоровій індикації.
+   .temp-warm (теплі кольори) для днів >= 20°C
+   .temp-cool (холодні кольори) для днів < 20°C
+*/
+
+.card {
+    background-color: #FFFFFF;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    text-align: center;
+    border-top: 4px solid #CCC; /* Базова лінія */
+}
+
+/* Теплі дні (Жовто-помаранчевий акцент) */
+.card.temp-warm {
+    border-top-color: #F57C00; 
+    background-color: #FFF3E0; /* Дуже легкий теплий фон */
+}
+.card.temp-warm h3 {
+    color: #E65100;
+}
+
+/* Холодні дні (Синьо-блакитний акцент) */
+.card.temp-cool {
+    border-top-color: #1976D2;
+    background-color: #E3F2FD; /* Дуже легкий холодний фон */
+}
+.card.temp-cool h3 {
+    color: #0D47A1;
+}
+
+/* Деталь дизайну: дрібніший опис */
+.card p {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 0;
+}
+
+.card .temp-val {
+    font-size: 24px;
+    font-weight: bold;
+    color: #222;
+    margin: 10px 0;
+}
+
+.card img {
+    width: 50px;
+    margin: 10px 0;
+}
+
+/* Aside */
+.sidebar {
+    background-color: #FFF9C4; /* М'який жовтий для поради */
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 5px solid #FBC02D;
+}
+.sidebar h2 {
+    color: #F57F17;
+    border-bottom: none;
+    margin-top: 0;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+    font-size: 0.9rem;
+    margin-top: 40px;
+}
+
+/*5. МЕДІА-ЗАПИТИ */
+
 @media (min-width: 600px) {
-    /* Картки прогнозу - 3 колонки (згідно з варіантом 1) */
-    .cards {
-        grid-template-columns: repeat(3, 1fr);
-    }
+    .cards { grid-template-columns: repeat(3, 1fr); }
 }
 
-
-/* ДЕСКТОП (від 1024px і ширше) */
 @media (min-width: 1024px) {
-    /* Картки прогнозу - 7 колонок в один рядок (згідно з варіантом 1) */
-    .cards {
-        grid-template-columns: repeat(7, 1fr);
-    }
-    
-    /* aside поруч із section "Поточна погода" через flex */
+    .cards { grid-template-columns: repeat(7, 1fr); }
     .top-row {
-        flex-direction: row; /* Ставимо в рядок */
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: stretch; /* Щоб aside і current були однакової висоти */
     }
-    
-    #current {
-        flex: 3; /* Секція займає більше місця */
-    }
-    
-    .sidebar {
-        flex: 1; /* Бокова панель займає менше місця */
-        margin-bottom: 0;
-    }
+    #current { flex: 3; }
+    .sidebar { flex: 1; margin-bottom: 0; }
 }
