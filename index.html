@@ -27,7 +27,7 @@
             <section id="current">
                 <h2>Поточна погода</h2>
                 <img src="assets/img/sunny.svg" alt="Іконка: сонячно, без опадів">
-                <p>Київ: +21&deg;C, ясно</p>
+                <p class="temp-large">+21&deg;C</p><p>Київ, ясно</p>
             </section>
 
             <aside class="sidebar">
@@ -43,27 +43,54 @@
             
             <!-- Обгортка для CSS Grid -->
             <div class="cards">
-                <article class="card">
-                    <h3>Пн</h3><p>+18&deg;C</p>
-                </article>
-                <article class="card">
-                    <h3>Вв</h3><p>+16&deg;C</p>
-                </article>
-                <article class="card">
-                    <h3>Ср</h3><p>+15&deg;C</p>
-                </article>
-                <article class="card">
-                    <h3>Чт</h3><p>+19&deg;C</p>
-                </article>
-                <article class="card">
-                    <h3>Пт</h3><p>+22&deg;C</p>
-                </article>
-                <article class="card">
-                    <h3>Сб</h3><p>+24&deg;C</p>
-                </article>
-                <article class="card">
-                    <h3>Нд</h3><p>+25&deg;C</p>
-                </article>
+                <article class="card temp-cool">
+                <h3>Пн</h3>
+                <img src="assets/img/cloudy.svg" alt="Іконка: хмарно">
+                <div class="temp-val">+18&deg;C</div>
+                <p>Хмарно</p>
+            </article>
+
+                <article class="card temp-cool">
+                <h3>Вт</h3>
+                <img src="assets/img/rain.svg" alt="Іконка: хмарно">
+                <div class="temp-val">+16&deg;C</div>
+                <p>Хмарно</p>
+            </article>
+
+                <article class="card temp-cool">
+                <h3>Ср</h3>
+                <img src="assets/img/rain.svg" alt="Іконка: дощ">
+                <div class="temp-val">+15&deg;C</div>
+                <p>Дощ</p>
+            </article>
+
+                <article class="card temp-cool">
+                <h3>Чт</h3>
+                <img src="assets/img/cloudy.svg" alt="Іконка: сонячно">
+                <div class="temp-val">+19&deg;C</div>
+                <p>Ясно</p>
+            </article>
+
+                <article class="card temp-warm">
+                <h3>Пт</h3>
+                <img src="assets/img/sunny.svg" alt="Іконка: сонячно">
+                <div class="temp-val">+22&deg;C</div>
+                <p>Ясно</p>
+            </article>
+
+                <article class="card temp-warm">
+                <h3>Сб</h3>
+                <img src="assets/img/sunny.svg" alt="Іконка: сонячно">
+                <div class="temp-val">+24&deg;C</div>
+                <p>Ясно</p>
+            </article>
+
+                <article class="card temp-warm">
+                <h3>Нд</h3>
+                <img src="assets/img/sunny.svg" alt="Іконка: сонячно">
+                <div class="temp-val">+25&deg;C</div>
+                <p>Ясно</p>
+            </article>
             </div>
         </section>
 
