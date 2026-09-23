@@ -197,3 +197,18 @@ footer {
     #current { flex: 3; }
     .sidebar { flex: 1; margin-bottom: 0; }
 }
+
+/* Клас для морозних днів (генерується через JS) */
+.card.cold {
+    border-top-color: #00838F;
+    background-color: #E0F7FA;
+}
+.card.cold h3 {
+    color: #006064;
+}
+.summary-text {
+    font-size: 1.1rem;
+    color: #444;
+    margin-bottom: 15px;
+}
+
