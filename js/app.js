@@ -63,3 +63,74 @@ function renderForecast(data) {
 
 // Викликаємо функцію, передаючи їй масив
 renderForecast(forecastData);
+
+/*ПРАКТИЧНА РОБОТА 8: ПОДІЇ ТА ФОРМИ*/
+
+// 1. Вибираємо необхідні елементи
+const addForm = document.querySelector("#add-forecast-form");
+const inputDay = document.querySelector("#input-day");
+const inputTemp = document.querySelector("#input-temp");
+const inputDesc = document.querySelector("#input-desc");
+
+const btnWarmestDay = document.querySelector("#btn-warmest-day");
+const warmestDayResult = document.querySelector("#warmest-day-result");
+
+// 2. ОБРОБКА SUBMIT ФОРМИ
+addForm.addEventListener("submit", function (event) {
+  // Скасовуємо стандартне перезавантаження сторінки
+  event.preventDefault();
+
+  // Зчитуємо значення з полів
+  const newDay = inputDay.value;
+  const newTemp = Number(inputTemp.value); // Перетворюємо на число
+  const newDesc = inputDesc.value;
+
+  // Створюємо новий об'єкт прогнозу (такої ж структури, як у масиві forecastData)
+  const newForecastItem = {
+    day: newDay,
+    tempC: newTemp,
+    description: newDesc,
+  };
+
+  // Додаємо новий об'єкт у масив
+  forecastData.push(newForecastItem);
+
+  // Перемальовуємо список (викликаємо функцію з ПР7)
+  renderForecast(forecastData);
+
+  // Очищаємо форму після успішного додавання
+  addForm.reset();
+});
+
+// 3. ДОДАТКОВА ВАЛІДАЦІЯ (Custom Validity згідно Варіанту 1)
+inputTemp.addEventListener("input", function () {
+  const tempValue = Number(inputTemp.value);
+
+  // Перевіряємо, чи ввели щось і чи виходить воно за межі -50...50
+  if (inputTemp.value !== "" && (tempValue < -50 || tempValue > 50)) {
+    // Якщо так, встановлюємо власне повідомлення про помилку
+    inputTemp.setCustomValidity("Температура поза реалістичним діапазоном");
+  } else {
+    // Якщо все добре, очищаємо повідомлення (скидаємо помилку)
+    inputTemp.setCustomValidity("");
+  }
+});
+
+// 4. ДОДАТКОВА ПОДІЯ ВАРІАНТУ (Пошук найтеплішого дня)
+btnWarmestDay.addEventListener("click", function () {
+  // Якщо масив порожній (хоча у нас він не порожній), захист
+  if (forecastData.length === 0) return;
+
+  let maxTempDay = forecastData[0]; // Припускаємо, що перший день найтепліший
+
+  // Перебираємо масив
+  for (const item of forecastData) {
+    if (item.tempC > maxTempDay.tempC) {
+      maxTempDay = item; // Знайшли тепліший день
+    }
+  }
+
+  // Виводимо результат
+  warmestDayResult.textContent = `Найтепліший день: ${maxTempDay.day} (${maxTempDay.tempC}°C)`;
+});
+
