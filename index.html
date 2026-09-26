@@ -25,11 +25,25 @@
         
         <!-- Обгортка для Flexbox (щоб поставити їх поруч на десктопі) -->
         <div class="top-row">
-            <section id="current">
-                <h2>Поточна погода</h2>
-                <img src="assets/img/sunny.svg" alt="Іконка: сонячно, без опадів">
-                <p class="temp-large">+21&deg;C</p><p>Київ, ясно</p>
-            </section>
+            
+        <!-- Секція 1: Поточна погода (Оновлено для ПР9: Fetch API) -->
+        <section id="current">
+            <h2>Поточна погода (Live)
+                <button id="btn-refresh" class="btn-small" aria-label="Оновити дані">🔄</button>
+            </h2>
+            
+            <!-- Блок для повідомлень (завантаження, помилки) -->
+            <div id="api-status-message" class="status-msg hidden"></div>
+            
+            <!-- Блок з даними (схований під час завантаження/помилки) -->
+            <div id="current-weather-data">
+                <img id="current-icon" src="assets/img/sunny.svg" alt="Іконка погоди">
+                <p class="temp-large"><span id="live-temp">--</span>&deg;C</p>
+                <p>Київ, <span id="live-desc">завантаження...</span></p>
+                <p style="font-size: 0.8rem; opacity: 0.8;">Оновлено: <span id="live-time">--:--</span></p>
+            </div>
+        </section>
+
 
             <aside class="sidebar"> 
                 <h2>Аналітика</h2>

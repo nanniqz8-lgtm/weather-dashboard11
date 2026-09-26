@@ -134,3 +134,110 @@ btnWarmestDay.addEventListener("click", function () {
   warmestDayResult.textContent = `Найтепліший день: ${maxTempDay.day} (${maxTempDay.tempC}°C)`;
 });
 
+/*ПРАКТИЧНА РОБОТА 9: FETCH API (Реальні дані) */
+
+// 1. URL згідно Варіанту 1 (Open-Meteo API)
+const API_URL =
+  "https://api.open-meteo.com/v1/forecast?latitude=50.45&longitude=30.52&current=temperature_2m,weather_code&timezone=auto";
+
+// 2. Словник (об'єкт) для перетворення weather_code у текст
+// (Згідно зі специфікацією WMO Weather interpretation codes)
+const weatherCodeDictionary = {
+  0: "Ясно (безхмарно)",
+  1: "Переважно ясно",
+  2: "Мінлива хмарність",
+  3: "Суцільна хмарність",
+  45: "Туман",
+  48: "Туман із памороззю",
+  51: "Мряка (легка)",
+  53: "Мряка (помірна)",
+  55: "Мряка (густа)",
+  61: "Дощ (легкий)",
+  63: "Дощ (помірний)",
+  65: "Дощ (сильний)",
+  71: "Снігопад (легкий)",
+  73: "Снігопад (помірний)",
+  75: "Снігопад (сильний)",
+  95: "Гроза",
+};
+
+// Функція-помічник для перекладу коду (якщо коду немає в словнику, повертає 'Невідомо')
+const getWeatherDescription = (code) =>
+  weatherCodeDictionary[code] || `Невідомо (Код: ${code})`;
+
+// 3. Вибираємо DOM-елементи
+const btnRefresh = document.querySelector("#btn-refresh");
+const statusMessage = document.querySelector("#api-status-message");
+const weatherDataBlock = document.querySelector("#current-weather-data");
+
+const liveTemp = document.querySelector("#live-temp");
+const liveDesc = document.querySelector("#live-desc");
+const liveTime = document.querySelector("#live-time");
+const currentIcon = document.querySelector("#current-icon");
+
+// 4. Основна АСИНХРОННА функція завантаження даних
+async function loadLiveData() {
+  // Етап А: Показуємо стан "Завантаження"
+  btnRefresh.disabled = true; // Блокуємо кнопку від спаму
+  statusMessage.textContent = "Отримання даних із супутника... 🛰️";
+  statusMessage.className = "status-msg loading"; // Показуємо повідомлення
+  weatherDataBlock.classList.add("hidden"); // Ховаємо старі дані
+
+  try {
+    // Етап Б: Робимо запит до сервера
+    const response = await fetch(API_URL);
+
+    // Перевіряємо, чи успішна відповідь (статус 200-299)
+    if (!response.ok) {
+      throw new Error(`Помилка сервера. Статус: ${response.status}`);
+    }
+
+    // Етап В: Розбираємо JSON відповідь
+    const data = await response.json();
+
+    // Виводимо в консоль для перевірки (Крок 5 інструкції)
+    console.log("Дані з Open-Meteo API:", data);
+
+    // Етап Г: Виводимо дані в DOM
+    // (data.current.temperature_2m, data.current.weather_code, data.current.time)
+    liveTemp.textContent = data.current.temperature_2m;
+    liveDesc.textContent = getWeatherDescription(data.current.weather_code);
+
+    // Форматуємо час (він приходить у форматі "2026-09-26T16:00")
+    const dateObj = new Date(data.current.time);
+    liveTime.textContent = dateObj.toLocaleTimeString("uk-UA", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    // Змінюємо іконку залежно від температури (спрощена логіка)
+    if (data.current.temperature_2m < 0) {
+      currentIcon.src = "assets/img/rain.svg"; // Заміни на сніг, якщо маєш таку іконку
+    } else {
+      currentIcon.src = "assets/img/sunny.svg";
+    }
+
+    // Ховаємо повідомлення, показуємо дані
+    statusMessage.className = "status-msg hidden";
+    weatherDataBlock.classList.remove("hidden");
+  } catch (error) {
+    // Етап Д: Обробка помилок (зокрема зникнення інтернету)
+    console.error("Помилка Fetch API:", error);
+
+    
+    // Виводимо користувачу специфічне повідомлення за варіантом
+    statusMessage.textContent =
+      "❌ Не вдалося отримати прогноз погоди. Перевірте з'єднання.";
+    statusMessage.className = "status-msg error"; // Показуємо червоний блок
+    // Блок із даними залишається схованим
+  } finally {
+    // Етап Е: Виконується завжди (успіх чи помилка)
+    btnRefresh.disabled = false; // Розблоковуємо кнопку
+  }
+}
+
+// 5. Навішуємо подію на кнопку "Оновити"
+btnRefresh.addEventListener("click", loadLiveData);
+
+// 6. Викликаємо функцію одразу при завантаженні сторінки
+loadLiveData();
