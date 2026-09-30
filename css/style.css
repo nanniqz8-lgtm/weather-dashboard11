@@ -130,7 +130,7 @@ section h2 {
     background-color: #FFF3E0; /* Дуже легкий теплий фон */
 }
 .card.temp-warm h3 {
-    color: #E65100;
+    color: #AC3900;
 }
 
 /* Холодні дні (Синьо-блакитний акцент) */
@@ -169,7 +169,7 @@ section h2 {
     border-left: 5px solid #FBC02D;
 }
 .sidebar h2 {
-    color: #F57F17;
+    color: #994C00;
     border-bottom: none;
     margin-top: 0;
 }

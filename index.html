@@ -6,6 +6,7 @@
     <title>Погодний дашборд</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="js/app.js" defer></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
 
@@ -92,56 +93,18 @@
 
             <p class="summary-text">Середня температура за період: <strong id="avg-temp">--</strong>&deg;C</p>
             
-            <!-- Обгортка для CSS Grid -->
-            <div class="cards" id="forecast-list">
-                <article class="card temp-cool">
-                <h3>Пн</h3>
-                <img src="assets/img/cloudy.svg" alt="Іконка: хмарно">
-                <div class="temp-val">+18&deg;C</div>
-                <p>Хмарно</p>
-            </article>
-
-                <article class="card temp-cool">
-                <h3>Вт</h3>
-                <img src="assets/img/rain.svg" alt="Іконка: хмарно">
-                <div class="temp-val">+16&deg;C</div>
-                <p>Хмарно</p>
-            </article>
-
-                <article class="card temp-cool">
-                <h3>Ср</h3>
-                <img src="assets/img/rain.svg" alt="Іконка: дощ">
-                <div class="temp-val">+15&deg;C</div>
-                <p>Дощ</p>
-            </article>
-
-                <article class="card temp-cool">
-                <h3>Чт</h3>
-                <img src="assets/img/cloudy.svg" alt="Іконка: сонячно">
-                <div class="temp-val">+19&deg;C</div>
-                <p>Ясно</p>
-            </article>
-
-                <article class="card temp-warm">
-                <h3>Пт</h3>
-                <img src="assets/img/sunny.svg" alt="Іконка: сонячно">
-                <div class="temp-val">+22&deg;C</div>
-                <p>Ясно</p>
-            </article>
-
-                <article class="card temp-warm">
-                <h3>Сб</h3>
-                <img src="assets/img/sunny.svg" alt="Іконка: сонячно">
-                <div class="temp-val">+24&deg;C</div>
-                <p>Ясно</p>
-            </article>
-
-                <article class="card temp-warm">
-                <h3>Нд</h3>
-                <img src="assets/img/sunny.svg" alt="Іконка: сонячно">
-                <div class="temp-val">+25&deg;C</div>
-                <p>Ясно</p>
-            </article>
+            <!-- Контейнер для Vue застосунку -->
+            <div id="app" class="cards">
+                <!-- Тут ми використовуємо наш власний компонент weather-card.
+                     v-for перебирає масив forecastList.
+                     :day, :temp-c, :description передають дані в компонент (props). -->
+                <weather-card 
+                    v-for="(dayItem, index) in forecastList" 
+                    :key="index"
+                    :day="dayItem.day"
+                    :temp-c="dayItem.tempC"
+                    :description="dayItem.description"
+                ></weather-card>
             </div>
         </section>
 

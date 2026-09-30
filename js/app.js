@@ -12,7 +12,7 @@ const forecastData = [
 ];
 
 //  Вибираємо контейнери на сторінці
-const listContainer = document.querySelector("#forecast-list");
+/*const listContainer = document.querySelector("#forecast-list");
 const avgTempElement = document.querySelector("#avg-temp");
 
 //  Функція рендеру
@@ -62,7 +62,7 @@ function renderForecast(data) {
 }
 
 // Викликаємо функцію, передаючи їй масив
-renderForecast(forecastData);
+renderForecast(forecastData); */
 
 /*ПРАКТИЧНА РОБОТА 8: ПОДІЇ ТА ФОРМИ*/
 
@@ -96,7 +96,7 @@ addForm.addEventListener("submit", function (event) {
   forecastData.push(newForecastItem);
 
   // Перемальовуємо список (викликаємо функцію з ПР7)
-  renderForecast(forecastData);
+  //renderForecast(forecastData);
 
   // Очищаємо форму після успішного додавання
   addForm.reset();
@@ -224,7 +224,6 @@ async function loadLiveData() {
     // Етап Д: Обробка помилок (зокрема зникнення інтернету)
     console.error("Помилка Fetch API:", error);
 
-    
     // Виводимо користувачу специфічне повідомлення за варіантом
     statusMessage.textContent =
       "❌ Не вдалося отримати прогноз погоди. Перевірте з'єднання.";
@@ -241,3 +240,72 @@ btnRefresh.addEventListener("click", loadLiveData);
 
 // 6. Викликаємо функцію одразу при завантаженні сторінки
 loadLiveData();
+
+/*ПРАКТИЧНА РОБОТА 10: VUE 3 COMPONENT*/
+
+const { createApp } = Vue;
+
+// 1. Описуємо компонент WeatherCard
+const WeatherCard = {
+  // Вказуємо, які дані (props) чекає цей компонент
+  props: ["day", "tempC", "description"],
+
+  // Локальний реактивний стан компонента
+  data() {
+    return {
+      showFahrenheit: false, // За замовчуванням Фаренгейти сховані
+    };
+  },
+
+  // Обчислювані значення (похідні від props або data)
+  computed: {
+    // Конвертуємо Цельсії у Фаренгейти автоматично
+    tempF() {
+      return ((this.tempC * 9) / 5 + 32).toFixed(1);
+    },
+    // Динамічний клас для картки залежно від температури
+    cardClass() {
+      if (this.tempC < 0) return "card cold";
+      if (this.tempC >= 20) return "card temp-warm";
+      return "card temp-cool";
+    },
+    // Динамічна іконка
+    weatherIcon() {
+      if (this.tempC < 0) return "assets/img/rain.svg"; // Заглушка, якщо немає снігу
+      return "assets/img/sunny.svg";
+    },
+  },
+
+  // Шаблон компонента (те, як він виглядає в HTML).
+  // @click  подія кліку, яка змінює стан showFahrenheit.
+  template: `
+        <article :class="cardClass" @click="showFahrenheit = !showFahrenheit" style="cursor: pointer;">
+            <h3>{{ day }}</h3>
+            <img :src="weatherIcon" alt="Іконка погоди">
+            <div class="temp-val">{{ tempC }}&deg;C</div>
+            
+            <!-- Умовний рендер: показуємо тільки якщо showFahrenheit = true -->
+            <div v-if="showFahrenheit" style="color: #666; font-size: 0.9em; margin-bottom: 5px;">
+                {{ tempF }}&deg;F
+            </div>
+            
+            <p>{{ description }}</p>
+        </article>
+    `,
+};
+
+// 2. Створюємо основний застосунок Vue
+const weatherApp = createApp({
+  components: {
+    "weather-card": WeatherCard,
+  },
+  data() {
+    return {
+      // Передаємо наш масив прогнозів (forecastData) з ПР6/8 у реактивний стан Vue
+      forecastList: forecastData,
+    };
+  },
+});
+
+// 3. Монтуємо застосунок у div з id="app"
+weatherApp.mount("#app");
