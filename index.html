@@ -32,6 +32,8 @@
             <h2>Поточна погода (Live)
                 <button id="btn-refresh" class="btn-small" aria-label="Оновити дані">🔄</button>
             </h2>
+
+            <button id="btn-save-city" class="btn-small" style="margin-left: 10px; background: #FFF3E0; color: #E65100; border-radius: 4px;">⭐ Зберегти місто</button>
             
             <!-- Блок для повідомлень (завантаження, помилки) -->
             <div id="api-status-message" class="status-msg hidden"></div>
@@ -87,6 +89,16 @@
         </section>
 
         <hr>
+
+        <hr>
+        <section id="saved">
+            <h2>Збережені міста (IndexedDB)</h2>
+            <div id="saved-cities-list" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Тут будуть з'являтися картки міст -->
+            </div>
+        </section>
+        <hr>
+
 
         <section id="forecast">
             <h2>Прогноз на тиждень</h2>

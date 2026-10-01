@@ -309,3 +309,177 @@ const weatherApp = createApp({
 
 // 3. Монтуємо застосунок у div з id="app"
 weatherApp.mount("#app");
+
+// ПРАКТИЧНА РОБОТА 11: LocalStorage та IndexedDB
+
+
+// 1. LocalStorage (Читання для міграції)
+function loadFromLocalStorage() {
+    try {
+        const raw = localStorage.getItem('savedCities');
+        return raw ? JSON.parse(raw) : [];
+    } catch (error) {
+        console.error('Помилка читання localStorage:', error);
+        return [];
+    }
+}
+
+// 2. Ініціалізація IndexedDB (Створення бази та Object Store)
+function openDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open('WeatherDB', 1);
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            // Створюємо сховище "cities", де ключ - це "id" (згідно з варіантом)
+            if (!db.objectStoreNames.contains('cities')) {
+                db.createObjectStore('cities', { keyPath: 'id' });
+                console.log('IndexedDB: Створено сховище cities');
+            }
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+// 3. CRUD: Додавання / Оновлення міста (PUT)
+async function addCityDB(city) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('cities', 'readwrite'); // Транзакція запису
+        tx.objectStore('cities').put(city); // put додає або оновлює
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+// 4. CRUD: Читання всіх міст (GET)
+async function getAllCitiesDB() {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('cities', 'readonly'); // Транзакція читання
+        const request = tx.objectStore('cities').getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+// 5. CRUD: Видалення міста (DELETE)
+async function deleteCityDB(id) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('cities', 'readwrite');
+        tx.objectStore('cities').delete(id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+// 6. Рендер списку (Vanilla JS, DOM API з ПР7)
+const savedCitiesContainer = document.querySelector('#saved-cities-list');
+
+function renderSavedCities(cities) {
+    if (!savedCitiesContainer) return;
+    savedCitiesContainer.innerHTML = ''; // Очищаємо
+
+    if (cities.length === 0) {
+        savedCitiesContainer.innerHTML = '<p style="color: #666;">Немає збережених міст.</p>';
+        return;
+    }
+
+    cities.forEach(city => {
+        const div = document.createElement('div');
+        div.className = 'saved-city-card';
+        // Виводимо структуру згідно з Варіантом 1
+        div.innerHTML = `
+            <div>
+                <strong>${city.name}</strong> 
+                <span style="color:#777; font-size: 0.85em;">(lat: ${city.lat}, lon: ${city.lon})</span><br>
+                Останній прогноз: <b>${city.temperature}°C</b>, ${city.weatherCode} <br>
+                <small style="color:#999;">Час запису: ${city.time}</small>
+            </div>
+            <button data-id="${city.id}" class="btn-delete">Видалити</button>
+        `;
+        savedCitiesContainer.append(div);
+    });
+}
+
+// 7. Головна функція запуску (з логікою МІГРАЦІЇ)
+async function initSavedCities() {
+    try {
+        const dbCities = await getAllCitiesDB();
+
+        // Якщо IndexedDB порожня, і ми ще не робили міграцію
+        if (dbCities.length === 0 && !localStorage.getItem('migratedToIDB')) {
+            console.log('Пошук старих даних у localStorage...');
+            const lsCities = loadFromLocalStorage();
+            
+            if (lsCities.length > 0) {
+                // Переносимо кожне місто в IndexedDB
+                for (const city of lsCities) {
+                    await addCityDB(city);
+                }
+                console.log('Міграцію успішно завершено!');
+            }
+            // Ставимо прапорець, щоб більше ніколи не робити міграцію
+            localStorage.setItem('migratedToIDB', 'true');
+            
+            // Завантажуємо вже нові дані
+            const updatedDbCities = await getAllCitiesDB();
+            renderSavedCities(updatedDbCities);
+        } else {
+            // Звичайне завантаження
+            renderSavedCities(dbCities);
+        }
+    } catch (error) {
+        console.error("Не вдалося відкрити IndexedDB:", error);
+        savedCitiesContainer.innerHTML = '<p style="color:red;">Помилка доступу до бази даних (можливо, включено приватний режим).</p>';
+    }
+}
+
+// 8. Обробники подій (ПР8)
+const btnSaveCity = document.querySelector('#btn-save-city');
+if (btnSaveCity) {
+    btnSaveCity.addEventListener('click', async () => {
+        // Збираємо дані з екрану (з блоку ПР9)
+        const liveTempText = document.querySelector('#live-temp').textContent;
+        const liveDescText = document.querySelector('#live-desc').textContent;
+        
+        // Захист від збереження порожніх/незавантажених даних
+        if (liveTempText === '--' || liveTempText === '') {
+            alert('Дочекайтесь завантаження погоди!');
+            return;
+        }
+
+        // Формуємо об'єкт згідно з Варіантом 1
+        const newCity = {
+            id: Date.now().toString(), // Унікальний ID
+            name: "Київ", 
+            lat: 50.45,
+            lon: 30.52,
+            temperature: parseFloat(liveTempText),
+            weatherCode: liveDescText,
+            time: new Date().toLocaleTimeString('uk-UA')
+        };
+
+        await addCityDB(newCity); // Зберігаємо в базу
+        const updated = await getAllCitiesDB(); // Отримуємо оновлений список
+        renderSavedCities(updated); // Перемальовуємо
+    });
+}
+
+// Делегування подій для кнопок "Видалити"
+if (savedCitiesContainer) {
+    savedCitiesContainer.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('btn-delete')) {
+            const id = e.target.dataset.id;
+            await deleteCityDB(id); // Видаляємо з бази
+            const updated = await getAllCitiesDB();
+            renderSavedCities(updated); // Перемальовуємо
+        }
+    });
+}
+
+// Запускаємо при завантаженні сторінки
+initSavedCities();
