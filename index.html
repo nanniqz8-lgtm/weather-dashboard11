@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:,">
     <title>Погодний дашборд</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="js/app.js" defer></script>
@@ -32,15 +33,15 @@
             <h2>Поточна погода (Live)
                 <button id="btn-refresh" class="btn-small" aria-label="Оновити дані">🔄</button>
             </h2>
-
             <button id="btn-save-city" class="btn-small" style="margin-left: 10px; background: #FFF3E0; color: #E65100; border-radius: 4px;">⭐ Зберегти місто</button>
+
             
             <!-- Блок для повідомлень (завантаження, помилки) -->
             <div id="api-status-message" class="status-msg hidden"></div>
             
             <!-- Блок з даними (схований під час завантаження/помилки) -->
             <div id="current-weather-data">
-                <img id="current-icon" src="assets/img/sunny.svg" alt="Іконка погоди">
+                <span id="current-icon" style="font-size: 3rem;">☀️</span>
                 <p class="temp-large"><span id="live-temp">--</span>&deg;C</p>
                 <p>Київ, <span id="live-desc">завантаження...</span></p>
                 <p style="font-size: 0.8rem; opacity: 0.8;">Оновлено: <span id="live-time">--:--</span></p>
@@ -111,8 +112,8 @@
                      v-for перебирає масив forecastList.
                      :day, :temp-c, :description передають дані в компонент (props). -->
                 <weather-card 
-                    v-for="(dayItem, index) in forecastList" 
-                    :key="index"
+                    v-for="dayItem in forecastList" 
+                    :key="dayItem.id"
                     :day="dayItem.day"
                     :temp-c="dayItem.tempC"
                     :description="dayItem.description"

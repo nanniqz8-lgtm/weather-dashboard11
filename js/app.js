@@ -2,13 +2,13 @@ console.log("DOM маніпуляції розпочато!");
 
 //  Оголошуємо масив даних (оновлено поля за Варіантом 1: day, tempC, description)
 const forecastData = [
-  { day: "Пн", tempC: 18, description: "Хмарно ☁️" },
-  { day: "Вт", tempC: 22, description: "Ясно ☀️" },
-  { day: "Ср", tempC: 15, description: "Дощ 🌧️" },
-  { day: "Чт", tempC: -2, description: "Сніг ❄️" }, // Морозний день для перевірки
-  { day: "Пт", tempC: 0, description: "Хмарно ☁️" },
-  { day: "Сб", tempC: -5, description: "Заметіль 🌨️" }, // Ще один морозний день
-  { day: "Нд", tempC: 5, description: "Ясно ☀️" },
+  { id: 1, day: "Пн", tempC: 18, description: "Хмарно ☁️" },
+  { id: 2, day: "Вт", tempC: 22, description: "Ясно ☀️" },
+  { id: 3, day: "Ср", tempC: 15, description: "Дощ 🌧️" },
+  { id: 4, day: "Чт", tempC: -2, description: "Сніг ❄️" },
+  { id: 5, day: "Пт", tempC: 0, description: "Хмарно ☁️" },
+  { id: 6, day: "Сб", tempC: -5, description: "Заметіль 🌨️" },
+  { id: 7, day: "Нд", tempC: 5, description: "Ясно ☀️" },
 ];
 
 //  Вибираємо контейнери на сторінці
@@ -87,10 +87,12 @@ addForm.addEventListener("submit", function (event) {
 
   // Створюємо новий об'єкт прогнозу (такої ж структури, як у масиві forecastData)
   const newForecastItem = {
+    id: Date.now(), // Генеруємо унікальний ID
     day: newDay,
     tempC: newTemp,
     description: newDesc,
   };
+
 
   // Додаємо новий об'єкт у масив
   forecastData.push(newForecastItem);
@@ -212,9 +214,9 @@ async function loadLiveData() {
 
     // Змінюємо іконку залежно від температури (спрощена логіка)
     if (data.current.temperature_2m < 0) {
-      currentIcon.src = "assets/img/rain.svg"; // Заміни на сніг, якщо маєш таку іконку
+      currentIcon.outerHTML = '<span id="current-icon" style="font-size: 3rem;">❄️</span>';
     } else {
-      currentIcon.src = "assets/img/sunny.svg";
+      currentIcon.outerHTML = '<span id="current-icon" style="font-size: 3rem;">☀️</span>';
     }
 
     // Ховаємо повідомлення, показуємо дані
@@ -269,10 +271,13 @@ const WeatherCard = {
       if (this.tempC >= 20) return "card temp-warm";
       return "card temp-cool";
     },
-    // Динамічна іконка
-    weatherIcon() {
-      if (this.tempC < 0) return "assets/img/rain.svg"; // Заглушка, якщо немає снігу
-      return "assets/img/sunny.svg";
+    // Використовуємо емодзі, щоб не було помилок 404
+    weatherEmoji() {
+      if (this.tempC <= -2) return "❄️";
+      if (this.tempC < 5) return "🌨️";
+      if (this.tempC < 15) return "☁️️";
+      if (this.tempC >= 20) return "☀️";
+      return "⛅";
     },
   },
 
@@ -281,7 +286,8 @@ const WeatherCard = {
   template: `
         <article :class="cardClass" @click="showFahrenheit = !showFahrenheit" style="cursor: pointer;">
             <h3>{{ day }}</h3>
-            <img :src="weatherIcon" alt="Іконка погоди">
+            <div style="font-size: 2.5rem; margin: 10px 0;">{{ weatherEmoji }}</div>
+
             <div class="temp-val">{{ tempC }}&deg;C</div>
             
             <!-- Умовний рендер: показуємо тільки якщо showFahrenheit = true -->
@@ -324,9 +330,28 @@ function loadFromLocalStorage() {
     }
 }
 
+// Функція для примусового збереження в localStorage (тільки для тестування міграції!)
+function setupTestLocalStorageData() {
+    if (!localStorage.getItem('migratedToIDB') && !localStorage.getItem('savedCities')) {
+        const testData = [
+            { id: "test-1", name: "Одеса", lat: 46.48, lon: 30.73, temperature: 22, weatherCode: "Ясно (безхмарно)", time: "12:00" }
+        ];
+        localStorage.setItem('savedCities', JSON.stringify(testData));
+        console.log("Тестові дані записано в localStorage для перевірки міграції.");
+    }
+}
+setupTestLocalStorageData(); // Викликаємо одразу
+
+
 // 2. Ініціалізація IndexedDB (Створення бази та Object Store)
 function openDB() {
     return new Promise((resolve, reject) => {
+      
+        // Перевіряємо, чи підтримується IndexedDB взагалі
+        if (!('indexedDB' in window)) {
+            return reject(new Error("Браузер не підтримує IndexedDB"));
+        }
+
         const request = indexedDB.open('WeatherDB', 1);
 
         request.onupgradeneeded = (event) => {
@@ -339,7 +364,12 @@ function openDB() {
         };
 
         request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
+        
+        // ОБРОБКА ПОМИЛОК: Ця подія спрацьовує, якщо доступ заблоковано (наприклад, у Firefox Private Browsing)
+        request.onerror = (event) => {
+            console.error("IndexedDB відмовив у доступі:", event.target.error);
+            reject(event.target.error || new Error("Невідома помилка IndexedDB"));
+        };
     });
 }
 
@@ -347,8 +377,8 @@ function openDB() {
 async function addCityDB(city) {
     const db = await openDB();
     return new Promise((resolve, reject) => {
-        const tx = db.transaction('cities', 'readwrite'); // Транзакція запису
-        tx.objectStore('cities').put(city); // put додає або оновлює
+        const tx = db.transaction('cities', 'readwrite'); 
+        tx.objectStore('cities').put(city); 
         tx.oncomplete = () => resolve();
         tx.onerror = () => reject(tx.error);
     });
@@ -358,7 +388,7 @@ async function addCityDB(city) {
 async function getAllCitiesDB() {
     const db = await openDB();
     return new Promise((resolve, reject) => {
-        const tx = db.transaction('cities', 'readonly'); // Транзакція читання
+        const tx = db.transaction('cities', 'readonly'); 
         const request = tx.objectStore('cities').getAll();
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
@@ -391,7 +421,6 @@ function renderSavedCities(cities) {
     cities.forEach(city => {
         const div = document.createElement('div');
         div.className = 'saved-city-card';
-        // Виводимо структуру згідно з Варіантом 1
         div.innerHTML = `
             <div>
                 <strong>${city.name}</strong> 
@@ -405,14 +434,15 @@ function renderSavedCities(cities) {
     });
 }
 
-// 7. Головна функція запуску (з логікою МІГРАЦІЇ)
+// 7. Головна функція запуску (з логікою МІГРАЦІЇ та ОБРОБКОЮ ПОМИЛОК)
 async function initSavedCities() {
+  
     try {
         const dbCities = await getAllCitiesDB();
 
         // Якщо IndexedDB порожня, і ми ще не робили міграцію
         if (dbCities.length === 0 && !localStorage.getItem('migratedToIDB')) {
-            console.log('Пошук старих даних у localStorage...');
+            console.log('Пошук старих даних у localStorage для міграції...');
             const lsCities = loadFromLocalStorage();
             
             if (lsCities.length > 0) {
@@ -420,7 +450,7 @@ async function initSavedCities() {
                 for (const city of lsCities) {
                     await addCityDB(city);
                 }
-                console.log('Міграцію успішно завершено!');
+                console.log('Міграцію з localStorage в IndexedDB успішно завершено!');
             }
             // Ставимо прапорець, щоб більше ніколи не робити міграцію
             localStorage.setItem('migratedToIDB', 'true');
@@ -433,28 +463,36 @@ async function initSavedCities() {
             renderSavedCities(dbCities);
         }
     } catch (error) {
-        console.error("Не вдалося відкрити IndexedDB:", error);
-        savedCitiesContainer.innerHTML = '<p style="color:red;">Помилка доступу до бази даних (можливо, включено приватний режим).</p>';
+        // ОБРОБКА ПОМИЛКИ ДОСТУПУ (try/catch успішно перехопив reject з openDB)
+        console.error("Помилка ініціалізації сховища:", error.message || error.name);
+        if (savedCitiesContainer) {
+            savedCitiesContainer.innerHTML = `
+                <div style="background-color: #FFEBEE; padding: 15px; border-radius: 8px; border: 1px solid #FFCDD2; color: #C62828;">
+                    <strong>⚠️ Помилка доступу до бази даних!</strong><br>
+                    Можливо, ви використовуєте режим "Інкогніто" або суворі налаштування приватності, які блокують IndexedDB. Функція збереження міст тимчасово недоступна.
+                </div>`;
+        }
+        
+        // Вимикаємо кнопку збереження, щоб уникнути подальших помилок
+        const btnSaveCity = document.querySelector('#btn-save-city');
+        if (btnSaveCity) btnSaveCity.disabled = true;
     }
 }
 
-// 8. Обробники подій (ПР8)
+// 8. Обробники подій
 const btnSaveCity = document.querySelector('#btn-save-city');
 if (btnSaveCity) {
     btnSaveCity.addEventListener('click', async () => {
-        // Збираємо дані з екрану (з блоку ПР9)
         const liveTempText = document.querySelector('#live-temp').textContent;
         const liveDescText = document.querySelector('#live-desc').textContent;
         
-        // Захист від збереження порожніх/незавантажених даних
         if (liveTempText === '--' || liveTempText === '') {
             alert('Дочекайтесь завантаження погоди!');
             return;
         }
 
-        // Формуємо об'єкт згідно з Варіантом 1
         const newCity = {
-            id: Date.now().toString(), // Унікальний ID
+            id: Date.now().toString(), 
             name: "Київ", 
             lat: 50.45,
             lon: 30.52,
@@ -463,20 +501,27 @@ if (btnSaveCity) {
             time: new Date().toLocaleTimeString('uk-UA')
         };
 
-        await addCityDB(newCity); // Зберігаємо в базу
-        const updated = await getAllCitiesDB(); // Отримуємо оновлений список
-        renderSavedCities(updated); // Перемальовуємо
+        try {
+            await addCityDB(newCity); 
+            const updated = await getAllCitiesDB(); 
+            renderSavedCities(updated); 
+        } catch(e) {
+            alert("Не вдалося зберегти дані.");
+        }
     });
 }
 
-// Делегування подій для кнопок "Видалити"
 if (savedCitiesContainer) {
     savedCitiesContainer.addEventListener('click', async (e) => {
         if (e.target.classList.contains('btn-delete')) {
             const id = e.target.dataset.id;
-            await deleteCityDB(id); // Видаляємо з бази
-            const updated = await getAllCitiesDB();
-            renderSavedCities(updated); // Перемальовуємо
+            try {
+                await deleteCityDB(id); 
+                const updated = await getAllCitiesDB();
+                renderSavedCities(updated); 
+            } catch(e) {
+                console.error(e);
+            }
         }
     });
 }
