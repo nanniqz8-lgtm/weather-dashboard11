@@ -319,7 +319,7 @@ weatherApp.mount("#app");
 // ПРАКТИЧНА РОБОТА 11: LocalStorage та IndexedDB
 
 
-// 1. LocalStorage (Читання для міграції)
+// 1. LocalStorage (Читання та Запис)
 function loadFromLocalStorage() {
     try {
         const raw = localStorage.getItem('savedCities');
@@ -330,17 +330,13 @@ function loadFromLocalStorage() {
     }
 }
 
-// Функція для примусового збереження в localStorage (тільки для тестування міграції!)
-function setupTestLocalStorageData() {
-    if (!localStorage.getItem('migratedToIDB') && !localStorage.getItem('savedCities')) {
-        const testData = [
-            { id: "test-1", name: "Одеса", lat: 46.48, lon: 30.73, temperature: 22, weatherCode: "Ясно (безхмарно)", time: "12:00" }
-        ];
-        localStorage.setItem('savedCities', JSON.stringify(testData));
-        console.log("Тестові дані записано в localStorage для перевірки міграції.");
-    }
+// Реальне збереження в LocalStorage (виправлення зауваження)
+function saveToLocalStorage(city) {
+    const lsCities = loadFromLocalStorage();
+    lsCities.push(city);
+    localStorage.setItem('savedCities', JSON.stringify(lsCities));
+    console.log('Дані реально записано в localStorage користувачем:', city.name);
 }
-setupTestLocalStorageData(); // Викликаємо одразу
 
 
 // 2. Ініціалізація IndexedDB (Створення бази та Object Store)
@@ -406,6 +402,37 @@ async function deleteCityDB(id) {
     });
 }
 
+// Обробник для нової кнопки збереження в LocalStorage
+const btnSaveLS = document.querySelector('#btn-save-ls');
+if (btnSaveLS) {
+    btnSaveLS.addEventListener('click', () => {
+        const liveTempText = document.querySelector('#live-temp').textContent;
+        const liveDescText = document.querySelector('#live-desc').textContent;
+        
+        if (liveTempText === '--' || liveTempText === '') {
+            return alert('Дочекайтесь завантаження погоди!');
+        }
+        
+        const newCity = {
+            id: "ls-" + Date.now().toString(),
+            name: "Львів (через LS)", // Зберігаємо як Львів, щоб відрізняти від Києва
+            lat: 49.83, lon: 24.02,
+            temperature: parseFloat(liveTempText),
+            weatherCode: liveDescText,
+            time: new Date().toLocaleTimeString('uk-UA')
+        };
+
+        // Викликаємо РЕАЛЬНУ функцію збереження!
+        saveToLocalStorage(newCity);
+        
+        // Скидаємо прапорець міграції, щоб при оновленні сторінки вона 100% спрацювала
+        localStorage.removeItem('migratedToIDB');
+        
+        alert('✅ Місто успішно збережено в LocalStorage!\n\nТепер натисніть ОК і оновіть сторінку (F5). Скрипт знайде ці дані і перенесе їх в IndexedDB.');
+    });
+}
+
+
 // 6. Рендер списку (Vanilla JS, DOM API з ПР7)
 const savedCitiesContainer = document.querySelector('#saved-cities-list');
 
@@ -441,7 +468,7 @@ async function initSavedCities() {
         const dbCities = await getAllCitiesDB();
 
         // Якщо IndexedDB порожня, і ми ще не робили міграцію
-        if (dbCities.length === 0 && !localStorage.getItem('migratedToIDB')) {
+        if (!localStorage.getItem('migratedToIDB')) {
             console.log('Пошук старих даних у localStorage для міграції...');
             const lsCities = loadFromLocalStorage();
             
